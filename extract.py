@@ -2,16 +2,20 @@ import pandas as pd
 import glob
 import os
 import logger
-from datetime import datetime
 import re
 
-DATA_PATH=os.environ["DATA_PATH"]
-files_path=os.path.join(DATA_PATH,"*.csv")
-logger.info(f"Data path is {files_path}")
-files = glob.glob(os.path.join(DATA_PATH,"*.csv"))
-files.sort()
 
-logger.info(f"Number of files discovered is {len(files)}")
+
+def load_files(data_path):
+    files_path=os.path.join(data_path,"*.csv")
+    logger.info(f"Data path is {files_path}")
+    files = glob.glob(os.path.join(data_path,"*.csv"))
+    logger.info(f"Number of files discovered is {len(files)}")
+    files.sort()
+    return files
+
+
+
 
 def is_date_valid(date):
     match_found = re.search("^(o|O)n.*$", date.strip())
@@ -63,7 +67,8 @@ def load_data(file):
 #     df = load_data(file)
 
 # extracted data frame
-def extract_data():
+def extract_data(data_path):
+    files = load_files(data_path=data_path)
     e_df = load_data(files[0])
     return e_df
 

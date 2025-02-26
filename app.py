@@ -1,24 +1,26 @@
 import extract as extract_service
-import embed_service
+import os
 import db
 import logger
+import transform as transform_service
 
 DEFAULT_EMBEDDING_MODEL="paraphrase-albert-small-v2"
+DATA_PATH=os.environ["DATA_PATH"]
 
-def etl():
-        df = extract_service.extract_data()
-        df.dropna(subset=["Review"],inplace=True)
-        reviews = df["Review"].to_list()
-        # texts = df["Review"].to_list()
-        # embeddings = embed_service.get_embeddings(texts=texts)
-        df.drop(columns=["Review"],inplace=True)
-        rows_num = df.shape[0]
-        metadata = []
+def generate_metadata(df):
         ids = []
-        for i in range(0,rows_num):
+        metadata = []
+        for i in range(0,df.shape[0]):
             ids.append(f"review_{i}")
             meta = df.iloc[i].to_dict()
             metadata.append(meta)
+        return ids,metadata
+
+def etl():
+        df = extract_service.extract_data()
+        df, reviews = transform_service.transform(df)
+        rows_num = df.shape[0]
+        ids, metadata = generate_metadata(df)   
         data = {
             "documents":reviews,
             "metadata":metadata,
@@ -35,4 +37,6 @@ def run(setup=False):
                                  model_name=DEFAULT_EMBEDDING_MODEL)
     logger.info(result)
 
-run()
+
+if __name__ == "__main__":
+    run(setup=False)
