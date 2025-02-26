@@ -3,6 +3,8 @@ import os
 import db
 import logger
 import transform as transform_service
+import prompt_template
+import chatbot
 
 DEFAULT_EMBEDDING_MODEL="paraphrase-albert-small-v2"
 DATA_PATH=os.environ["DATA_PATH"]
@@ -33,9 +35,14 @@ def run(setup=False):
     if setup:
         etl()
     result = db.query_collection(collection_name="reviews",
-                                 query="Review of a car taliking about the engine",
+                                 query="Get reviews that talk about enginer and performance of the car",
                                  model_name=DEFAULT_EMBEDDING_MODEL)
-    logger.info(result)
+    # logger.info(type(result))
+    prompt = prompt_template.get_system_prompt(result)
+    # logger.info(result)
+    # logger.info(prompt)
+    content = chatbot.query("I want to buy a car with good performance.Is this car right for me?",prompt)
+    print(content)
 
 
 if __name__ == "__main__":

@@ -35,5 +35,5 @@ def query_collection(collection_name,query,model_name,distance_function_name="co
         include=["documents", "distances", "metadatas"]
     )
     logger.info(f"Found {len(results['documents'])} documents")
-    logger.info(results["documents"][0][0])
-    return results
+    # logger.info(results["documents"][0][0])
+    return results["documents"][0][0]
